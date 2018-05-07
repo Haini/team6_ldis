@@ -19,7 +19,7 @@ package permutate_pkg is
 
 		port(
 			i_S	: in std_logic_vector(128-1 downto 0);
-			o_S	: out std_logic_vector(128-1 downto 0);
+			o_S	: out std_logic_vector(128-1 downto 0)
 		);
 
 	end component permutate;

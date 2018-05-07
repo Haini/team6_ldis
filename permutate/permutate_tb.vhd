@@ -21,12 +21,16 @@ end permutate_tb;
 --
 architecture permutate_tb of permutate_tb is
 	
+	i_S_duv	: signal std_logic_vector(128-1 downto 0);
+	o_S_duv	: signal std_logic_vector(128-1 downto 0);
 
 begin
 
 	DUV : entity work.permutate
-
+		
 		port map(
+			i_S => i_S_duv,	
+			o_S	=> o_S_duv
 		); 
   
 	clk_gen : process
