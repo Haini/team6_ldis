@@ -1,0 +1,3 @@
+[submodule "ldis"]
+	path = ldis
+	url = https://btutzer@bitbucket.org/btutzer/ldis.git
