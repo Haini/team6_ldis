@@ -21,8 +21,8 @@ end permutate_tb;
 --
 architecture permutate_tb of permutate_tb is
 	
-	i_S_duv	: signal std_logic_vector(128-1 downto 0);
-	o_S_duv	: signal std_logic_vector(128-1 downto 0);
+	i_S_duv	: signal std_logic_vector(128*8-1 downto 0);
+	o_S_duv	: signal std_logic_vector(128*8-1 downto 0);
 
 begin
 
