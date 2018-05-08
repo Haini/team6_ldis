@@ -10,6 +10,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 use work.permutate_pkg.all;
 --
 --------------------------------------------------------------------------------
@@ -21,8 +22,8 @@ end permutate_tb;
 --
 architecture permutate_tb of permutate_tb is
 	
-	i_S_duv	: signal std_logic_vector(128*8-1 downto 0);
-	o_S_duv	: signal std_logic_vector(128*8-1 downto 0);
+	signal i_S_duv :	std_logic_vector(128*8-1 downto 0);
+	signal o_S_duv :	std_logic_vector(128*8-1 downto 0);
 
 begin
 
@@ -39,6 +40,12 @@ begin
 
 	test: process
 	begin
+		i_S_duv <= (others => '0');
+
+		wait for 1 ns;
+
+		assert i_S_duv = (128*8-1 downto 0 => '0') report "Input 0 does not result in Output 0!"
+		severity FAILURE;
 		report "TEST PASSED" severity NOTE;
 	end process test;
 	
