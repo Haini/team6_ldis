@@ -89,3 +89,31 @@ GB(v_0, v_4, v_8, v_12)
 
 trunc(a) --- the 64-bit value a truncated to the 32 least significant
  bits
+ 
+ 
+## Extra Info for Project:
+Project 2: Engineering
+
+Group 8
+
+Compression Function G:
+Memory Map for Matrix must be defined.
+
+
+G6 and G5 need to figure out together for the Memory Map.
+
+
+Group 8 need Specification of API/Input Output
+
+
+Should be probably same lenght
+
+13 bits Adresses - should use 12 bits
+B[i][j] -> lenght T for j = 0,1
+								is 1024 bytes for others.
+						Start Adress of Segment is given by formula: (256*i+j)*1024 ---> Adress Map for big Matrix B
+						
+2²⁶ is space on hardware.
+2²⁰ adresses to fill the matrix needed.
+
+
