@@ -7,7 +7,7 @@ representation and saves the converted numbers to a new file. Usefull for VHDL
 """
 
 # Open the file
-with open("file_in.txt") as f:
+with open("testvector_small.txt") as f:
 	
 	#Iterate over all lines in the file and convert
 	for line in f: 

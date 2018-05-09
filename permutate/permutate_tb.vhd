@@ -65,21 +65,22 @@ begin
 		variable slv_v : std_logic_vector(128*8-1 downto 0) := (others => '0');	
 		variable readInt : integer := 0;	
 		
-		constant file_name: string :="testvector_small.txt";
+		constant file_name: string :="testvector_bin.txt";
 		file in_file: f_byte open read_mode is file_name;
 		variable a: character;
 		
 	begin
 
 		for i in 0 to 15 loop
-			for i in 0 to 23 loop
+			for j in 0 to 64 loop
 			exit when a = character'val(10);
 				if not endfile (in_file) then
 					read(in_file, a);
 					if a = character'val( 10 ) then --check if newline
 						report "Found newline";			
+					else
+						report to_string(i) &"]SLV: " & to_string(a);
 					end if;
-					report "SLV: " & to_string(a);
 				end if;
 			end loop;
 			a := '0';
