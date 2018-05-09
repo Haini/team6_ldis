@@ -63,28 +63,42 @@ begin
 		file read_file : text;
 		file write_file : text;
 		variable slv_v : std_logic_vector(128*8-1 downto 0) := (others => '0');	
+
+		variable line_read : std_logic_vector(63 downto 0);
 		variable readInt : integer := 0;	
 		
 		constant file_name: string :="testvector_bin.txt";
 		file in_file: f_byte open read_mode is file_name;
+
 		variable a: character;
 		
 	begin
 
-		for i in 0 to 15 loop
-			for j in 0 to 64 loop
-			exit when a = character'val(10);
-				if not endfile (in_file) then
-					read(in_file, a);
-					if a = character'val( 10 ) then --check if newline
-						report "Found newline";			
-					else
-						report to_string(i) &"]SLV: " & to_string(a);
-					end if;
-				end if;
-			end loop;
-			a := '0';
-		end loop;
+		file_open(read_file, "testvector_bin.txt", read_mode);
+		readline(read_file, line_v);
+		report "TEST: " & line_v.all;
+		file_close(read_file);
+
+		wait;
+
+--		for i in 0 to 15 loop
+--
+--			for j in 0 to 64 loop
+--			exit when a = character'val(10);
+--				if not endfile (in_file) then
+--					read(in_file, a);
+--					if a = character'val( 10 ) then --check if newline
+--						report "Found newline";			
+--					else
+--						report to_string(i) &"]SLV: " & to_string(a);
+--						slv_v((128*8-1)-j-i*64) := to_string(a);
+--					end if;
+--				end if;
+--			end loop;
+--			a := '0';
+--		end loop;
+--
+		report "RESULT: " & to_string(slv_v);
 	
 		wait for 1 ns;
 		i_S_duv <= (others => '0');
