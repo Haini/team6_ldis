@@ -41,6 +41,9 @@ architecture permutate_tb of permutate_tb is
 
 	signal i_S_duv :	std_logic_vector(128*8-1 downto 0);
 	signal o_S_duv :	std_logic_vector(128*8-1 downto 0);
+	
+	subtype by_te is character;
+	type f_byte is file of by_te;
 
 begin
 
@@ -61,22 +64,44 @@ begin
 		file write_file : text;
 		variable slv_v : std_logic_vector(128*8-1 downto 0) := (others => '0');	
 		variable readInt : integer := 0;	
+		
+		constant file_name: string :="testvector_small.txt";
+		file in_file: f_byte open read_mode is file_name;
+		variable a: character;
+		
 	begin
-		file_open(read_file, "testvector_small.txt", read_mode);
-		file_open(write_file, "testvector_small_out.txt", write_mode);
-		--while not endfile(read_file) loop 
-			report "SLV_START: " & to_hstring(slv_v);
-			readline(read_file, line_v);
-				for i in 0 to 15 loop
-					readline(read_file, line_v);
-					--writeline(write_file, line_v);
+
+		for i in 0 to 15 loop
+			for i in 0 to 23 loop
+			exit when a = character'val(10);
+				if not endfile (in_file) then
+					read(in_file, a);
+					if a = character'val( 10 ) then --check if newline
+						report "Found newline";			
+					end if;
+					report "SLV: " & to_string(a);
+				end if;
+			end loop;
+			a := '0';
+		end loop;
+	
+	
+	
+		--file_open(read_file, "testvector_small.txt", read_mode);
+		--file_open(write_file, "testvector_small_out.txt", write_mode);
+		----while not endfile(read_file) loop 
+			--report "SLV_START: " & to_hstring(slv_v);
+			--readline(read_file, line_v);
+				--for i in 0 to 15 loop
+					--readline(read_file, line_v);
+					----writeline(write_file, line_v);
+					----read(line_v, readInt);
 					--read(line_v, readInt);
-					read(line_v, readInt);
-					--report "SLV1: " & to_string(readInt);
-					report "SLV: " & to_string(std_logic_vector(to_unsigned(readInt,slv_v'length)));
-					wait for 1 ns;
-				end loop;
-		--end loop;
+					----report "SLV1: " & to_string(readInt);
+					--report "SLV: " & to_string(std_logic_vector(to_unsigned(readInt,slv_v'length)));
+					--wait for 1 ns;
+				--end loop;
+		----end loop;
 
 		wait for 1 ns;
 		i_S_duv <= (others => '0');
