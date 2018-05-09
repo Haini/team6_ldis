@@ -13,7 +13,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use IEEE.std_logic_textio.all;
+--use IEEE.std_logic_textio.all;
 use std.textio.all;
 
 use work.permutate_pkg.all;
@@ -73,32 +73,26 @@ begin
 		variable a: character;
 		
 	begin
-
+	
 		file_open(read_file, "testvector_bin.txt", read_mode);
-		readline(read_file, line_v);
-		report "TEST: " & line_v.all;
+		
+		-- Loop over the file lines and save each line (one v_X) to the 
+		-- big input vector.
+		-- One should check the correct order of the registers within the vector
+		for i in 0 to 15 loop
+			readline(read_file, line_v);
+			read(line_v, line_read);
+			
+			slv_v((128*8-1)-(i*64) downto ((128*8-1)-(64*(i+1))+1)) := line_read;
+		end loop;
+
+		report "InputVector is: " & to_string(slv_v);
 		file_close(read_file);
-
-		wait;
-
---		for i in 0 to 15 loop
+-- Reading data end
 --
---			for j in 0 to 64 loop
---			exit when a = character'val(10);
---				if not endfile (in_file) then
---					read(in_file, a);
---					if a = character'val( 10 ) then --check if newline
---						report "Found newline";			
---					else
---						report to_string(i) &"]SLV: " & to_string(a);
---						slv_v((128*8-1)-j-i*64) := to_string(a);
---					end if;
---				end if;
---			end loop;
---			a := '0';
---		end loop;
+--------------------------------------------------------------------------------
 --
-		report "RESULT: " & to_string(slv_v);
+-- The real testing starts here
 	
 		wait for 1 ns;
 		i_S_duv <= (others => '0');
