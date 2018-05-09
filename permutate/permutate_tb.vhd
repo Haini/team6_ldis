@@ -63,20 +63,18 @@ begin
 		variable readInt : integer;	
 		variable good : boolean := false;
 	begin
-		file_open(read_file, "binary.txt", read_mode);
+		file_open(read_file, "testvector_small.txt", read_mode);
 		file_open(write_file, "testvector_small_out.txt", write_mode);
 		--while not endfile(read_file) loop 
 			report "SLV_START: " & to_hstring(slv_v);
 			readline(read_file, line_v);
 				for i in 0 to 15 loop
 					readline(read_file, line_v);
-					writeline(write_file, line_v);
-					report "STARTING READ";
+					--writeline(write_file, line_v);
+					--read(line_v, readInt);
 					read(line_v, readInt);
-					--read(line_v, to_integer(slv_v));
-					slv_v := std_logic_vector(unsigned(to_unsigned(readInt, 128*8-1)));
-					report "SLV1: " & integer'image(readInt);
-					--report "SLV: " & to_string(slv_v);
+					--report "SLV1: " & to_string(readInt);
+					report "SLV: " & to_string(std_logic_vector(to_unsigned(readInt,slv_v'length)));
 					wait for 1 ns;
 				end loop;
 		--end loop;
