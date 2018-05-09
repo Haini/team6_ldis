@@ -74,7 +74,8 @@ begin
 					--read(line_v, readInt);
 					read(line_v, readInt);
 					--report "SLV1: " & to_string(readInt);
-					report "SLV: " & to_string(std_logic_vector(to_unsigned(readInt,slv_v'length)));
+					report "SLV: " &
+					to_string(std_logic_vector(unsigned(to_unsigned(readInt,slv_v'length+1))));
 					wait for 1 ns;
 				end loop;
 		--end loop;

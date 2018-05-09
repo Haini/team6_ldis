@@ -55,18 +55,18 @@ begin
     p_read : process
     file file_in                : text open read_mode is "file_in.txt";
     variable row                : line;
-    variable var                : integer := 0;
+    variable var                : integer;
     variable slv                : std_logic_vector(128*8-1 downto 0);
 
     begin
-          --if(not endfile(file_in)) then
-          --    readline(file_in,row);
-          --end if;
-          --read(row,var);
-          read(file_in, var);
-          --slv := std_logic_vector(to_unsigned(var,128*8));
-          --report "Data=" & integer'image(var);
-          report "Data_bin=" & Image(slv);
+          if(not endfile(file_in)) then
+              readline(file_in,row);
+          end if;
+          read(row,var);
+          --read(row,slv);
+          --slv := std_logic_vector(unsigned(to_unsigned(var,var'length)));
+          report "Data=" & integer'image(var);
+          --report "Data_bin=" & Image(slv);
           report "Sim finish" severity failure;
           
           
