@@ -20,6 +20,9 @@ entity argon2_operation_2 is
 
 	port(
 		enable_part1	: in std_logic;
+		hash_done	: in std_logic; -- Ready bit when hash/tag computation done from Hash Function
+		compute_tag : out std_logic_vector( 128*8 -1 downto 0);
+		hash        : out std_logic_vector(1024*8 -1 downto 0);
 		memory	: inout std_logic_vector(128*8-1 downto 0)
 	);
 
@@ -40,6 +43,7 @@ architecture beh of argon2_operation_2 is
 	signal state, state_next	: type_state;
 	signal tag, C	: std_logic_vector(1023 downto 0); --TODO Fix type
 	signal tag_next, C_next	: std_logic_vector(1023 downto 0); --TODO Fix type
+	signal tag, tag_next std_logic_vector(1024*8 -1 downto 0)
 	
 	-- TODO more signals
 
@@ -48,7 +52,7 @@ begin
 -- === TODO ===
 
 	-- next state & output logic--
-	state_out : process(tag, C)
+	state_out : process(tag, C, hash_done)
 	begin
 
 		-- prevent latches, set default values
@@ -106,10 +110,12 @@ begin
 --8)
 --The output tag is computed as H’(C).
 -- Call H' Function of Team 5
-				tag_compute <= C;
+				compute_tag <= C;
 				
-				tag_next <= tag_result;
-				state_next <= STATE_IDLE;				
+				if(hash_done = '1') then
+					tag_next <= hash;
+					state_next <= STATE_IDLE;	
+				end if;			
 				
 		end case;
 
