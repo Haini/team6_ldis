@@ -25,9 +25,8 @@ end compress;
 --------------------------------------------------------------------------------
 --
 architecture beh of compress is
-begin
 
-	type type_state is (
+type type_state is (
 		STATE_IDLE,
 		STATE_COMPUTE_R,
 		STATE_COMPUTE_Q,
@@ -41,7 +40,6 @@ begin
 
 	-- internal to aggregate the received bits to a data word
 	-- TODO more signals
-
 
 begin
 
