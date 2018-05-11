@@ -17,7 +17,7 @@ use ieee.numeric_std.all;
 use std.textio.all;
 
 use work.permutate_pkg.all;
-use work.strings_h.all;
+--use work.strings_h.all;
 --
 --------------------------------------------------------------------------------
 --
@@ -61,8 +61,10 @@ begin
 	test: process
 		variable line_v : line;
 		file read_file : text;
+		file read_file2 : text;
 		file write_file : text;
 		variable slv_v : std_logic_vector(128*8-1 downto 0) := (others => '0');	
+		variable slv_assert : std_logic_vector(128*8-1 downto 0) := (others => '0');	
 
 		variable line_read : std_logic_vector(63 downto 0);
 		variable readInt : integer := 0;	
@@ -74,8 +76,10 @@ begin
 		
 	begin
 	
-		file_open(read_file, "testvector_bin.txt", read_mode);
-		
+	file_open(read_file, "testvector_bin.txt", read_mode);
+	file_open(read_file2, "bin_self_result.txt", read_mode);
+
+	for testruns in 0 to 6 loop
 		-- Loop over the file lines and save each line (one v_X) to the 
 		-- big input vector.
 		-- One should check the correct order of the registers within the vector
@@ -86,8 +90,16 @@ begin
 			slv_v((128*8-1)-(i*64) downto ((128*8-1)-(64*(i+1))+1)) := line_read;
 		end loop;
 
-		report "InputVector is: " & to_string(slv_v);
-		file_close(read_file);
+		for i in 0 to 15 loop
+			readline(read_file2, line_v);
+			read(line_v, line_read);
+
+			slv_assert((128*8-1)-(i*64) downto ((128*8-1)-(64*(i+1))+1)) := line_read;
+		end loop;
+
+		report "TO ASSERT: " & to_hstring(slv_assert(128*8-1 downto 128*7));
+		report "InputVector is: " & to_hstring(slv_v(128*8-1 downto 128*7));
+
 -- Reading data end
 --
 --------------------------------------------------------------------------------
@@ -95,14 +107,17 @@ begin
 -- The real testing starts here
 	
 		wait for 1 ns;
-		i_S_duv <= (others => '0');
-		wait for 1 ns;
-
-		assert i_S_duv = (128*8-1 downto 0 => '0') report "Input 0 does not result in Output 0!"
+		i_S_duv <= slv_v;
+		wait for 2 ns;
+		assert o_S_duv = slv_assert report "Output Vector didn't match precomputed output Vector!"& LF &
+		to_hstring(o_S_duv) & LF & to_hstring(slv_assert)
 		severity FAILURE;
 
-		report "TEST PASSED" severity NOTE;
+		assert o_S_duv /= slv_assert report "TEST PASSED" severity NOTE;
 
+	end loop;	
+	file_close(read_file);
+	file_close(read_file2);
 		wait;
 	end process test;
 	
