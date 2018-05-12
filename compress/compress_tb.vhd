@@ -42,14 +42,13 @@ begin
 			o_Z	=> o_Z_duv
 		); 
   
-	clk_gen : process
-	begin
-	end process clk_gen;
 
 	test: process
 	begin
+		wait for 1 ns;
 		i_X_duv <= (others => '0');
 		i_Y_duv <= (others => '0');
+		wait for 1 ns;
 		report "TEST PASSED" severity NOTE;
 		wait;
 	end process test;

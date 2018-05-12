@@ -88,30 +88,11 @@ begin
 							COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)+1); 
 			end loop;
 		end loop;
-		--for ii in 0 to 7 loop
 
-		--	-- Fill COL with one Column
-		--	for i in 0 to 7 loop
-		--		report to_string(VS_SIZE - 16*8*i) & " | " & to_string(VS_SIZE - 16*8*(i+1)+1);
-		--		report to_string(V_SIZE - 16*8*(j + i)) & " | " & to_string(V_SIZE - 16*8*(j + i+1));
-		--		COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)+1) := 
-		--				R(V_SIZE - 16*8*(j+i) downto V_SIZE - 16*8*(j+i+1));
-		--	end loop;
+	end process;
 
-		--	-- Calculate the Permutation
-		--	i_S <= COL;
-		--	COL := o_S; 
-
-		--	-- Rewrite Columns with result 
-		--	for i in 0 to 7 loop
-		--		R(V_SIZE - 16*8*(j + i) downto V_SIZE - 16*8*(j + i+1)) :=
-		--					COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)); 
-		--	end loop;
-
-		--	-- Go one Column to the right
-		--	j := j+8;
-		--end loop;
-
+	get_output : process(o_S)
+	begin
 	end process;
 
 end beh;

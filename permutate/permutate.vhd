@@ -46,9 +46,14 @@ begin
 	begin
 		
 		--report "***Starting Calculations***";		
+
+		--Split the input vector into a block format
 		for i in 0 to 15 loop
 			v_res(15-i) := i_S((i+1)*64-1 downto i*64);
 		end loop;
+		
+
+		-- Execute the specified permutation sequence 
 		for i in 0 to 3 loop
 			--report "V["&to_string(0+i)&"]: "&to_hstring(v_res(0+i));
 			--report "V["&to_string(4+i)&"]: "&to_hstring(v_res(4+i));
@@ -93,20 +98,6 @@ begin
 		v_res(9) 	:= v_tmp(2);
 		v_res(14) 	:= v_tmp(3);
 
-
-
-		--for i in 0 to 3 loop
-		--	offs := i*4;
-		--	v_in(0) := (i_S(((128*8-1)-((offs+0)*64)) downto ((128*8-1)-((offs+1)*64)+1)));
-		--	v_in(1) := (i_S(((128*8-1)-((offs+1)*64)) downto ((128*8-1)-((offs+2)*64)+1)));
-		--	v_in(2) := (i_S(((128*8-1)-((offs+2)*64)) downto ((128*8-1)-((offs+3)*64)+1)));
-		--	v_in(3) := (i_S(((128*8-1)-((offs+3)*64)) downto ((128*8-1)-((offs+4)*64)+1)));
-
-		--	debug_vin <= v_in(0);	
-
-		--	v_res((0 + i*4) to (3 + i*4)) := f_GB(v_in);
-		--	
-		--end loop;
 
 		o_S <= v_res(0) & v_res(1) & v_res(2) & v_res(3) & v_res(4) &
 				 v_res(5) & v_res(6) & v_res(7) & v_res(8) & v_res(9) &
