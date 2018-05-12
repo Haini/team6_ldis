@@ -1,0 +1,13 @@
+A \gls{trng} based on the paper from \autocite{Majzoobi2011} had to be implemented.
+
+The paper shows an approach that promises a resource efficient and fast solution to the
+problem of generating long enough keys for cryptographic algorithms. The reproduction of
+the results in the paper is a challenging and important task, as the paper is very
+incomplete regarding information about the actual implementation.
+
+The source of randomness is based on the metastability characteristics of a d-flipflop when violating setup or hold times of the flipflop.
+To create such violations the novel approach of delay lines is introduced. The data and
+clock input ports of the flipflop are both preceded by a series of \glspl{lut} blocks. 
+These \glspl{lut} blocks are functionally just used as inverters - but due to the
+inner structe of a \glspl{lut} a delay can be introduced by applying different control
+signals to the \glspl{lut} ports.

@@ -1,0 +1,109 @@
+A naive implementation of the papers approach did not lead to any reproduceable output.
+Therefore a list of stepstones that were encountered while working on a solution is
+compiled. The most important takeway from the following is that the top and bottom delay
+lines need to be symmetric in terms of placement, routing and ports.
+
+The paper authors omit any details on the actual implementation, but as this 
+question in the comments of a blog post (most likely from the paper author) shows it was
+of interest for them as well \autocite{Mehrdad2010} and that they also struggled with
+optimization during synthesis.
+
+The following constraints provide us with a solid ground for further work as placement,
+routing and pin assignments are now mostly consistent with every synthesis run. 
+
+\subsection{Unwanted Optimization of Logic Elements}
+This was mainly a problem for the \gls{lut} blocks and sometimes a problem for
+the d-flipflop. The synthesis tool tries to minimize the use of \gls{lut} blocks as it
+rightfully detects the redundancy in the logic. It therefore minimizes the LUT6 (6 inputs)
+blocks to combinations of smaller LUT Blocks - controlling the delay is therefore not
+possible anymore (on the one hand due to the missing delay of the mutliplexers in the lut
+and on the other hand due to the possible asymmetry in the top and bottom delay paths).
+
+\subsubsection{Mitigation}
+The Xilinx / Vivado Documentation states on this topic that the DONT_TOUCH attribute is
+the best option \autocite{XilinxAttributes}. It should ensure that the signal is kept, in
+reality this does not work reliably, or the author didn't understand it fully. 
+
+\begin{lstlisting}[
+	style = vhdl,
+	caption = {Attribute Declaration in VHDL, for the flipflop},
+	label = lst:attrDontTouch,
+]
+	attribute DONT_TOUCH : string;
+	attribute DONT_TOUCH of flipflop: label is "TRUE";
+\end{lstlisting}
+
+\subsection{Unwanted Optimization of Logic Element Placement}
+The luts would be placed in many different ways for every synthesis run, even if nothing
+else changed. Fixing the location of the luts to specific slices solved this problem.
+A spreadsheet was created to ease the creation of the assignments.
+
+\subsubsection{Mitigation}
+\begin{lstlisting}[
+	style = vhdl,
+	caption = {Set location of a lut},
+	label = lst:setLoc,
+]
+set_property LOC SLICE_X85Y125 [get_cells gen_bot_coarse_plds[1].i_bot_coarse_pld/g0_b0]
+\end{lstlisting}
+
+ 
+\subsection{Unwanted Optimization of Routing Paths}
+As the routing tool is - rightfully - trying to minimize setup and hold times in the
+routed design it creates asymmetric paths with delays that can be longer than the
+logic delay introduced by the lut blocks. Net Delays of up to 126ns could be observed,
+while the logic delay on the same path would only account for 7ns. 
+This in itself would not cause a problem if the top and bottom path would show the same
+delay. But already a 5\% deviation of top and bottom path would render the delay of
+the delay lines useless.
+
+\subsubsection{Mitigation}
+Timing analysis and optimization can be disabled for net paths or cells. For the sake of
+simplicity all cells in in the delay path very excluded from the timing analysis.
+This lead to more direct and more consistent routings. 
+
+\begin{lstlisting}[
+	style = vhdl,
+	caption = {Disable the timing analysis for luts},
+	label = lst:disableTiming,
+	]
+set_disable_timing [get_cells {gen_top_coarse_plds[*].i_top_coarse_pld/g0_b0}]
+set_disable_timing [get_cells {gen_top_fine_plds[*].i_top_fine_pld/g0_b0}]
+
+set_disable_timing [get_cells {gen_bot_coarse_plds[*].i_bot_coarse_pld/g0_b0}]
+set_disable_timing [get_cells {gen_bot_fine_plds[*].i_bot_fine_pld/g0_b0}]
+\end{lstlisting}
+
+Another option that has to be considered is to route the delay path nets first and only
+after that the rest. No specific improvements could be obsereved, alltough other groups
+reported some.
+
+\begin{lstlisting}[
+	style = vhdl,
+	caption = {Route critical nets first},
+	label = lst:routeFirst,
+	]
+set preRoutes [get_nets  {*lut_t_* *lut_b_*}]
+route_design -net [get_nets \$preRoutes] -delay
+route_design -preserve
+\end{lstlisting}
+
+\subsection{Unwanted Optimization of Port Elements}
+The synthesis / routing tool can decide how to arrange the port mapping of the luts, e.g.
+port A6 of the lut can be mapped to signal I0 while the expected mapping would be A0:I0. 
+This again causes asymmetry in the delay paths as certain ports (with A6 being the fastest
+and A0 the slowest) of the lut react faster than others (as per the design of the lut).
+
+\subsubsection{Mitigation}
+Ports of logic elements can be fixed by the following commands. 
+
+\begin{lstlisting}[
+	style = vhdl,
+	caption = {Disable the timing analysis for luts},
+	label = lst:disableTiming,
+	]
+set_property LOCK_PINS { I0:A1 I1:A2 I2:A3 I3:A4 I4:A5 I5:A6 } [get_cells *i_top_coarse_pld/g0_b0 ]
+set_property LOCK_PINS { I0:A1 I1:A2 I2:A3 I3:A4 I4:A5 I5:A6 } [get_cells *i_top_fine_pld/g0_b0 ]
+set_property LOCK_PINS { I0:A1 I1:A2 I2:A3 I3:A4 I4:A5 I5:A6 } [get_cells *i_bot_coarse_pld/g0_b0 ]
+set_property LOCK_PINS { I0:A1 I1:A2 I2:A3 I3:A4 I4:A5 I5:A6 } [get_cells *i_bot_fine_pld/g0_b0 ]
+\end{lstlisting}

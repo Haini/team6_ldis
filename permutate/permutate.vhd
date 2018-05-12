@@ -36,7 +36,6 @@ architecture beh of permutate is
 	signal debug_vres : blockR(0 to 15);
 	signal debug_vin : std_logic_vector(63 downto 0);
 
-
 begin
 
 	permutation: process(i_S)

@@ -1,0 +1,10 @@
+A random number generator (RNG) based on the paper from \autocite{Majzoobi2011}
+had to be implemented. The paper proposed a solution based on creating a metastable
+flipflop. As metastabiltiy requires the violation of setup and hold times a
+delay line based on Lookup Tables (\gls{lut}) was introduced to create a phase shift between
+clock and data input ports of the flipflop. 
+The reproduction of the results was not possible, as placement of the
+Combinatorial Logic Blocks (e.g. \gls{lut}) and the routing process influence
+the outcomes heavily and change from synthesis run to synthesis run. Therefore
+this solution foucuses an making the synthesis process more deterministic
+by creating various constraints on the plcaement and routing process.

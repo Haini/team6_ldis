@@ -1,9 +1,9 @@
 """
---PYVERSION: Only tested with 3.5
---AUTHOR: Constantin Schieber, 1228774
---MAIL: Constantin.Schieber@outlook.com
---PURPOSE: This script converts 64Bit Unsigned Integers into its 64 Bit binary
---representation and saves the converted numbers to a new file. Usefull for VHDL
+PYVERSION: Only tested with 3.5
+AUTHOR: Constantin Schieber, 1228774
+MAIL: Constantin.Schieber@outlook.com
+PURPOSE: This script converts 64Bit Unsigned Integers into its 64 Bit binary
+representation and saves the converted numbers to a new file. Usefull for VHDL
 """
 
 # Open the file

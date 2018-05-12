@@ -1,13 +1,10 @@
-#
-# Rotates a Number num logically right by count bits
-# Works well with 64 bits 
-# Returns the number as integer
-#
 """
 ---PYVERSION: Only tested with 3.5
 ---AUTHOR: Constantin Schieber, 1228774
 ---MAIL: Constantin.Schieber@outlook.com
----PURPOSE: 
+---PURPOSE: Recreate the Permutation Function from Section 3.6
+---			Reads Input Test Vectors from a file 'testvector_bin.txt'
+---			Writes expected output to a file 'bin_self_result'
 """
 
 #@brief binary rotate right

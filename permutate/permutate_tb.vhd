@@ -89,6 +89,9 @@ begin
 			
 			slv_v((128*8-1)-(i*64) downto ((128*8-1)-(64*(i+1))+1)) := line_read;
 		end loop;
+		for ii in 0 to 15 loop
+			readline(read_file, line_v);
+		end loop;
 
 		for i in 0 to 15 loop
 			readline(read_file2, line_v);
@@ -107,7 +110,9 @@ begin
 -- The real testing starts here
 	
 		wait for 1 ns;
+		report "Assigning signal... " & to_hstring(slv_v(128*8-1 downto 128*7));
 		i_S_duv <= slv_v;
+		report "Assigned signal...";
 		wait for 2 ns;
 		assert o_S_duv = slv_assert report "Output Vector didn't match precomputed output Vector!"& LF &
 		to_hstring(o_S_duv) & LF & to_hstring(slv_assert)
