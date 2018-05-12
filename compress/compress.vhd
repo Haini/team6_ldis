@@ -20,6 +20,7 @@ entity compress is
 	port(
 		i_X : in std_logic_vector(1024*8-1 downto 0);
 		i_Y : in std_logic_vector(1024*8-1 downto 0);
+		o_Z : in std_logic_vector(1024*8-1 downto 0)
 	);
 
 end compress;
@@ -28,29 +29,16 @@ end compress;
 --
 architecture beh of compress is
 
-	type type_state is (
-			STATE_IDLE,
-			STATE_COMPUTE_R,
-			STATE_COMPUTE_Q,
-			STATE_COMPUTE_Z,
-			STATE_COMPUTE_OUTPUT
-		);
 
 	constant V_SIZE : integer := 1024*8-1;
 	constant VS_SIZE : integer := 128*8-1;
 
-	signal state, state_next	: type_state;
-	signal X, Y, P, R, Q, Z		: std_logic_vector(V_SIZE downto 0);
-	signal X_next, Y_next, P_next, R_next, Q_next, Z_next	: std_logic_vector(V_SIZE downto 0);
 
 	--Operate on smaller X,Y sizes, do more sequential stuff instead
 	signal small_X 	: std_logic_vector(VS_SIZE downto 0);
 	signal small_Y 	: std_logic_vector(VS_SIZE downto 0);
 	signal i_S 		: std_logic_vector(VS_SIZE downto 0);
 	signal o_S 		: std_logic_vector(VS_SIZE downto 0);
-
-	-- internal to aggregate the received bits to a data word
-	-- TODO more signals
 
 begin
 
@@ -68,102 +56,63 @@ begin
 		variable s_X : std_logic_vector(VS_SIZE downto 0);
 		variable s_Y : std_logic_vector(VS_SIZE downto 0);
 		variable COL : std_logic_vector(VS_SIZE downto 0);
+		variable j : integer range 0 to 56;
 	begin
 
 		-- 1.) Do X XOR Y
-		R := s_X xor s_Y;
+		R := X xor Y;
 
 		-- 2.) Permutate Resulting R0...R7
 		-- 2.1) Permutate Rows
-		for i in 0 to 8 loop
+		for i in 0 to 7 loop
 			i_S <= R(V_SIZE - 128*8*i downto V_SIZE - 128*8*(i+1)+1);
 			R(V_SIZE - 128*8*i downto V_SIZE - 128*8*(i+1)+1) := o_S;
 		end loop;
 
 		-- 2.2) Permutate Columns
-		for i in 0 to 8 loop
-			for j in 0 to 8 loop
-				
+		for ii in 0 to 7 loop
+			for i in 0 to 7 loop
+				report to_string(V_SIZE-1024*ii-i*16*8) & " | " & to_string(V_SIZE-1024*ii-16*8-(i*16*8)+1);
+				COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)+1) := 
+					R(V_SIZE-1024*ii-i*16*8 downto V_SIZE-1024*ii-16*8-(i*16*8)+1);
+			end loop;
+
+			-- Calculate the Permutation
+			i_S <= COL;
+			COL := o_S; 
+			report to_string(COL);
+
+			-- Rewrite Columns with result 
+			for i in 0 to 7 loop
+				R(V_SIZE-1024*ii-i*16*8 downto V_SIZE-1024*ii-16*8-(i*16*8)+1) :=
+							COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)+1); 
 			end loop;
 		end loop;
-		i_S <= R;
-		R := o_S; 
+		--for ii in 0 to 7 loop
+
+		--	-- Fill COL with one Column
+		--	for i in 0 to 7 loop
+		--		report to_string(VS_SIZE - 16*8*i) & " | " & to_string(VS_SIZE - 16*8*(i+1)+1);
+		--		report to_string(V_SIZE - 16*8*(j + i)) & " | " & to_string(V_SIZE - 16*8*(j + i+1));
+		--		COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)+1) := 
+		--				R(V_SIZE - 16*8*(j+i) downto V_SIZE - 16*8*(j+i+1));
+		--	end loop;
+
+		--	-- Calculate the Permutation
+		--	i_S <= COL;
+		--	COL := o_S; 
+
+		--	-- Rewrite Columns with result 
+		--	for i in 0 to 7 loop
+		--		R(V_SIZE - 16*8*(j + i) downto V_SIZE - 16*8*(j + i+1)) :=
+		--					COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)); 
+		--	end loop;
+
+		--	-- Go one Column to the right
+		--	j := j+8;
+		--end loop;
 
 	end process;
-
-	-- next state & output logic--
-	state_out : process(X, Y, P, R, Q, Z)
-	begin
-
-		-- prevent latches, set default values
-		state_next	<= state;
-		X_next <= X;
-		Y_next <= Y;
-		P_next <= P;
-		R_next <= R;
-		Q_next <= Q;
-		Z_next <= Z;
-
-		case state is
-			when STATE_IDLE =>
-				-- TODO
-				X_next <= i_X;
-				Y_next <= i_Y;
-				
-				state_next <= STATE_COMPUTE_R;
-
-			when STATE_COMPUTE_R =>
-				-- TODO
-				R_next <= X XOR Y;
-				
-				state_next <= STATE_COMPUTE_Q;
-
-			when STATE_COMPUTE_Q =>
-				-- TODO
-				
-				permuatationfunc <= R
-					
-				state_next <= STATE_COMPUTE_Z;
-
-			when STATE_COMPUTE_Z =>
-				-- TODO
-				permuatationfunc <= Z
-				
-				state_next <= STATE_COMPUTE_OUTPUT;
-				
-			when STATE_COMPUTE_OUTPUT =>
-				-- TODO
-				
-				output <= Z XOR R;
-				state_next <= STATE_IDLE;				
-				
-		end case;
-
-	end process state_out;
-
-	-- sync Logic--
-	sync : process(clk, rst)
-	begin
-
-		if rst = '1' then
-			state <= STATE_IDLE;
-
-		elsif rising_edge(clk) then
-			state <= state_next;
-			X <= X_next;
-			Y <= Y_next;
-			P <= P_next;
-			R <= R_next;
-			Q <= Q_next;
-			Z <= Z_next;
-		end if;
-
-	end process sync;
-
-	--data <= data_out;
-
-
-
 
 end beh;
 

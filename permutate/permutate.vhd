@@ -45,25 +45,25 @@ begin
 		variable offs : integer range 0 to 16;
 	begin
 		
-		report "***Starting Calculations***";		
+		--report "***Starting Calculations***";		
 		for i in 0 to 15 loop
 			v_res(15-i) := i_S((i+1)*64-1 downto i*64);
 		end loop;
 		for i in 0 to 3 loop
-			report "V["&to_string(0+i)&"]: "&to_hstring(v_res(0+i));
-			report "V["&to_string(4+i)&"]: "&to_hstring(v_res(4+i));
-			report "V["&to_string(8+i)&"]: "&to_hstring(v_res(8+i));
-			report "V["&to_string(12+i)&"]: "&to_hstring(v_res(12+i));
+			--report "V["&to_string(0+i)&"]: "&to_hstring(v_res(0+i));
+			--report "V["&to_string(4+i)&"]: "&to_hstring(v_res(4+i));
+			--report "V["&to_string(8+i)&"]: "&to_hstring(v_res(8+i));
+			--report "V["&to_string(12+i)&"]: "&to_hstring(v_res(12+i));
 			v_tmp := f_GB(v_res(0+i), v_res(4+i), v_res(8+i), v_res(12+i));
 			v_res(0+i) 		:= v_tmp(0); 
 			v_res(4+i) 		:= v_tmp(1);
 			v_res(8+i) 		:= v_tmp(2);
 			v_res(12+i) 	:= v_tmp(3);
-			report "V["&to_string(0+i)&"]: "&to_hstring(v_res(0+i));
-			report "V["&to_string(4+i)&"]: "&to_hstring(v_res(4+i));
-			report "V["&to_string(8+i)&"]: "&to_hstring(v_res(8+i));
-			report "V["&to_string(12+i)&"]: "&to_hstring(v_res(12+i));
-			report "=============================================";
+			--report "V["&to_string(0+i)&"]: "&to_hstring(v_res(0+i));
+			--report "V["&to_string(4+i)&"]: "&to_hstring(v_res(4+i));
+			--report "V["&to_string(8+i)&"]: "&to_hstring(v_res(8+i));
+			--report "V["&to_string(12+i)&"]: "&to_hstring(v_res(12+i));
+			--report "=============================================";
 		end loop;
 
 		

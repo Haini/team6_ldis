@@ -18,6 +18,9 @@ package compress_pkg is
 	component compress is
 
 		port(
+			i_X : in std_logic_vector(1024*8-1 downto 0);
+			i_Y : in std_logic_vector(1024*8-1 downto 0);
+			o_Z : in std_logic_vector(1024*8-1 downto 0)
 		);
 
 	end component compress;
