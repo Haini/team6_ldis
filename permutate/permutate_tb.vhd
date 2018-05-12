@@ -13,11 +13,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---use IEEE.std_logic_textio.all;
 use std.textio.all;
 
 use work.permutate_pkg.all;
---use work.strings_h.all;
 --
 --------------------------------------------------------------------------------
 --
@@ -54,9 +52,6 @@ begin
 			o_S	=> o_S_duv
 		); 
   
-	--clk_gen : process
-	--begin
-	--end process clk_gen;
 
 	test: process
 		variable line_v : line;

@@ -328,7 +328,7 @@
 		{\large Supervisors:\\[.5em]
 			Christian Krieg, Martin Mosbeck, Axel Jantsch} \\[10em]
 
-		{\Huge Task 1: Implementing a TRNG on a FPGA}\\[10em]
+		{\Huge Task 2: Implementing Argon2}\\[10em]
 	\end{center}
 
 
@@ -378,10 +378,6 @@ The STATE_SSEG_RN state sends the random number data to the seven segment module
 For the UART we used the given UART IP and slightly modified it for our purposes.
 
 \subsection{Seven Segment Display}
-The Seven Segment Display implementation was in theory straight forward. There were some problems with variables but we fixed it by using signals. Also in the beginning we used way too fast refreshing periods. The problem occurred when we connected the package with the implementation of the RNG part.
-The seven segment display uses a refresh period of 1ms to 16ms as stated in the datasheet. We've chosen 8ms as the period with 1ms refresh time per segment. Timing Diagram from https://reference.digilentinc.com/reference/programmable-logic/nexys-4-ddr/reference-manual for better understanding: \\
-\includegraphics[scale=1]{n4u.png}\\
-The modul has an internal buffer for the numbers, that should be displayed on the segments. The seven segment module triggers the data copy with an enable signal from the TRNG. Therefore the Module has only a simple state machine with two states: Idle and a state for copying data to the buffer.
 
 %\lipsum[2]
 %
