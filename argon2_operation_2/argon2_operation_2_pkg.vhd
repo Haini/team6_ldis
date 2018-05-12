@@ -18,6 +18,9 @@ package argon2_operation_2_pkg is
 	component argon2_operation_2 is
 
 		generic(
+			DEG_OF_PARALLELISM  : integer := 4;
+			MAX_TAG_LEN_BYTE    : integer := 1024;
+			MAX_ITERATION_COUNT : integer := 1e6
 		);
 
 		port(
