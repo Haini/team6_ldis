@@ -9,7 +9,7 @@ The folders permutate and compress contain an additional `testgeneration` folder
 where Python Scripts (>3.5) for the generation / conversion of test vectors reside.
 
 The `./permutation/permutation_pkg.vhd` package holds some vital functions:
-- `trunc(a)`, the truncate function
+- `trunc`, the truncate function
 - `f_GB`, the round function
 - `f_PERMUTATE`, the permutation function P
  

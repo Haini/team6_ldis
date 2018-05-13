@@ -35,11 +35,14 @@ architecture beh of permutate is
 
 begin
 	
+	-- Only here for testbench purposes
+	-- To see the actual implementation of f_PERMUTATE go to permutate_pkg.vhd
 	permutation: process(i_S)
 		variable v_res : blockR(0 to 15); 
 	begin
 		v_res := f_PERMUTATE(i_S);	
-
+		
+		-- Reassemble the returned array to a std_logic_vector
 		o_S <= v_res(0) & v_res(1) & v_res(2) & v_res(3) & v_res(4) &
 				 v_res(5) & v_res(6) & v_res(7) & v_res(8) & v_res(9) &
 				 v_res(10) & v_res(11) & v_res(12) & v_res(13) & v_res(14) &

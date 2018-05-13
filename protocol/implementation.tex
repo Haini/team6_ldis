@@ -1,5 +1,5 @@
 Some decisions regarding all parts of the implementation were made to provide a
-solution that works in simulation at least. These assumptions do not conform to the specification.
+solution that works at least in simulation. These assumptions do not conform to the specification.
 
 \begin{enumerate}
 \item Grade of achieveable parallelism is 1
@@ -36,9 +36,9 @@ of the argon2 implementation, including the following files from the /src direct
 
 \begin{itemize}
 \item ref.c
-\item blake2blake2b.c
-\item blake2blamka-round-ref.h
-\item ..Makefile
+\item blake2/blake2b.c
+\item blake2/blamka-round-ref.h
+\item ../Makefile
 \end{itemize}
 
 
@@ -74,8 +74,9 @@ processing (see \Cref{lst:blake2bc}). Removal of the tags was done by hand, a py
 
 First tests proved to be unsuccessful though, as the implementation of the permutation
 function in the C Code differs from the one proposed in the irtf-draft\autocite{irtf-draft}.
-To double check on our proposed solution a python script that also implements the
-permutation P and round GB function was created.
+To double check on our proposed solution a python script (permutate.py) that also implements the
+permutation P and round GB function was created and fed with the input vectors of the
+reference solution.
 
 The python and vhdl implementations did deliver the same output. Analyzing the reference
 solution more closely revealed that there are reference, optimized and actually used code
@@ -157,10 +158,25 @@ When using the correct test vectors from the reference function or our own
 generated test vectors from the python script the permutation function shows correct
 behaviour.
 
-
 \subsection{Compression Function G}
-\subsection{Argon2, Steps 5-8}
+Compression Function G basically uses the Permutation Function on 2 XORed 1024 byte input
+vectors.
+Our implementation just operates on the whole 1024 byte vector, despite the fact that
+there are only row and column wise operations on 128 byte vectors. An natural option for
+optimization is therefore the creation of a process that processes 128 byte chunks,
+returns the chunk and then takes the next one. Very much like the C Reference solution is
+already operating. 
 
+\subsubsection{Verification}
+Testvectors are extracted in the same manner as before, this time in the ref.c file.
+We fail to match the output of the reference solution with the one of our own implementation.
+It is very difficult to find the point of failure, as there is no absolute certainity
+about the correctness of the verification testvectors. One way to tackle this problem
+would be an extension of the already existing python implementation.
+
+\subsection{Argon2, Steps 5-8}
+Due to time constraints and the chosen order of implementation only a bare bone state
+machine was created.
 
 %\begin{lstlisting}[
 %	style = vhdl,

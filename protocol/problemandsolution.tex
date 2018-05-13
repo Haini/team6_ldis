@@ -13,7 +13,7 @@ order.
 The truncation function trunc(a) truncates a 64 bit vector to a 32 bit vector and 
 is needed to perform multiplications with two 32 bit vectors, which in turn help to
 increase the circuit depth of the implementation. This is important when the target
-hardware are ASICs or FPGAs.
+hardware are \glspl{asic} or \glspl{fpga}.
 \\
 Permutation function P takes one 128 byte input and applies a round function GB
 on it.
@@ -25,4 +25,4 @@ Steps 5-8 of the Argon2 Operation are related to computing the actual output tag
 They operate on a matrix B[i][j] which is, due to its size, placed
 in the DDR2 SDRAM chip. These steps use the compression function G and a variable 
 hash function that is provided by Team 5. It also uses the computed indices i and j,
-provided by Team 6.
+provided by Team 8. 

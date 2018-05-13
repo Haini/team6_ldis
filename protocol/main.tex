@@ -87,6 +87,14 @@
   firstplural={hardware description languages (HDLs)},
 }
 
+\newglossaryentry{asic}{
+	name = {ASIC},
+	description = {Application specific integrated circuit},
+	text = {ASIC},
+	first = {Application specific integrated circuit (ASIC)},
+	plural = {ASICs},
+	firstplural = {Application specific integrated circuit (ASICs)},
+}
 
 \newglossaryentry{fpga}{
 	name = {FPGA},
@@ -349,10 +357,10 @@
 %
 %----------------------------------------------------------------------------
 %
-\section{Results (verification plan)}
-\label{sec:results}
-
-\input{results.tex}
+%\section{Results (verification plan)}
+%\label{sec:results}
+%
+%\input{results.tex}
 
 
 %
@@ -367,6 +375,12 @@
 %
 \section{Conclusions}
 \label{sec:conclusions}
+The authors failed to implement the task. 
+They are confident that the permutation function works well in simulation.
+They implemented the compression function and can't see a reason why it shouldn't work,
+alltough the current set of verification testvectors says otherwise.
+Further time for investigations would be required.
+Argon2 Steps 5-8 could not be implemented.
 
 %
 %----------------------------------------------------------------------------

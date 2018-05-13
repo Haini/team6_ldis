@@ -1,0 +1,12 @@
+Worth a mention: Python is not really suitable for bitwise manipulations, at least without
+a good third party library. There exists no bitwise rotation function, and the easiest way
+to implement one was by string operations on the binary representation.
+One might consider to write future testprograms directly in C as it provides a more
+accurate representation of the low level world (e.g. python abstracts the sign bit out of
+the actual number). 
+\\
+VHDL can't operate with 64 bit numbers. This led to a long delay in the testbench
+generation as it was tried to read the testvectors as integers at first. As VHDL is
+limited to 32 bit integers the proper solution is to convert the numbers into hex or
+binary beforehand and then read them as std_logic_vectors / unsigned data types.
+Reading from file without any complications also requires the VHDL-2008 Standard. 

@@ -27,17 +27,6 @@ end permutate_tb;
 --
 architecture permutate_tb of permutate_tb is
 
-	-- function to print std_logic_vectors
-    function Image(In_Image : Std_Logic_Vector) return String is
-        variable L : Line;  -- access type
-        variable W : String(1 to In_Image'length) := (others => ' ');
-    begin
-         WRITE(L, In_Image);
-         W(L.all'range) := L.all;
-         Deallocate(L);
-         return W;
-    end Image;	
-
 	signal i_S_duv :	std_logic_vector(128*8-1 downto 0);
 	signal o_S_duv :	std_logic_vector(128*8-1 downto 0);
 	
