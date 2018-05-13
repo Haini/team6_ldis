@@ -2,7 +2,7 @@ Some decisions regarding all parts of the implementation were made to provide a
 solution that works in simulation at least. These assumptions do not conform to the specification.
 
 \begin{enumerate}
-\item Grade achieveable of parallelism is 1
+\item Grade of achieveable parallelism is 1
 \item Design is not synthesizable and ignores especially the low area criteria
 \item Simulation only possible with VHDL-2008 Standard, --std=08 flag mandatory
 \end{enumerate}
@@ -81,11 +81,11 @@ The python and vhdl implementations did deliver the same output. Analyzing the r
 solution more closely revealed that there are reference, optimized and actually used code
 lines that rely heavily on preprocessor statements. 
 
-Analysis of the Makefile showed, that a check for the platform was done (\Cref{makefile}), and if the
+Analysis of the Makefile showed, that a check for the platform was done (\Cref{lst:makefile}), and if the
 platform was supported the optimized version of the files was used.
 After modifying the Makefile accordingly (and now actually using the reference solution)
 the generated output \textbf{did} match the output of our vhdl solution, see also table
-\Cref{permresults}.
+\Cref{tbl:permresults}.
 
 \begin{lstlisting}[
 	style = customc, 
@@ -133,12 +133,12 @@ endif
 
 For one part the upper half of the 128 Byte Input is initialized in an unexpected way that
 is not mentioned in the \autocite{irtf-draft}. This seems to be part of the regular way of
-implementing blake2b, see the code listing \Cref{blake2bcRound} where v[15] is initialized
+implementing blake2b, see the code listing \Cref{lst:blake2bcRound} where v[15] is initialized
 by loading a fixed UINT64 and XORing it with an unknown parameter f[1]. 
 
 \begin{lstlisting}[
 	style = customc,
-	caption = {Suboptimal extraction point in blake2b.c},
+	caption = {Differing implementation of Round Function},
 	label = lst:blake2bcRound,
 ]
 /*Strange Vector Init*/ v[15] = blake2b_IV[7] ^ S->f[1];
@@ -151,6 +151,11 @@ by loading a fixed UINT64 and XORing it with an unknown parameter f[1].
         c = c + d;                                                             
         b = rotr64(b ^ c, 24);                                                 
 \end{lstlisting}
+
+
+When using the correct test vectors from the reference function or our own
+generated test vectors from the python script the permutation function shows correct
+behaviour.
 
 
 \subsection{Compression Function G}

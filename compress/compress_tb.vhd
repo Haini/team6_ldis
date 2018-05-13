@@ -60,6 +60,8 @@ begin
 	begin
 		file_open(read_file, "compress_bin.txt", read_mode);
 		report "Starting read...";	
+
+	for j in 0 to 5 loop
 		-- Read the Input Vector X
 		for i in 0 to 127 loop
 			readline(read_file, line_v);
@@ -82,7 +84,6 @@ begin
 			
 			slv_assert((1024*8-1)-(i*64) downto ((1024*8-1)-(64*(i+1))+1)) := line_read;
 		end loop;
-	file_close(read_file);
 -- Reading data end
 --
 --------------------------------------------------------------------------------
@@ -98,12 +99,14 @@ begin
 		i_Y_duv <= slv_inputY;
 		wait for 1 ns;
 
-		report to_hstring(slv_assert(1024*8-1 downto 1024*8-128));
-		report to_hstring(o_Z_duv(1024*8-1 downto 1024*8-128));
+		report "Desired Output: " & to_hstring(slv_assert(1024*8-1 downto 1024*8-128)) & "...";
+		report "Actual Output:  " & to_hstring(o_Z_duv(1024*8-1 downto 1024*8-128)) & "...";
 
-		assert o_Z_duv = slv_assert report "Output Vector didn't match precomputed vector!" severity FAILURE;
-		report "TEST PASSED" severity NOTE;
-		wait;
+		assert o_Z_duv = slv_assert report "TEST FAILED! Output Vector didn't match precomputed vector!" severity NOTE;
+		assert o_Z_duv /= slv_assert report "TEST PASSED" severity NOTE;
+	end loop;
+	file_close(read_file);
+	wait;
 	end process test;
 	
 end compress_tb;
