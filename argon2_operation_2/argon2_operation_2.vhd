@@ -16,12 +16,15 @@ use ieee.std_logic_1164.all;
 entity argon2_operation_2 is
 
 	generic(
+		DEG_OF_PARALLELISM  : integer := 4;
+		MAX_TAG_LEN_BYTE    : integer := 1024;
+		MAX_ITERATION_COUNT : integer := 1e6
 	);
 
 	port(
 		enable_part1	: in std_logic;
 		hash_done	: in std_logic; -- Ready bit when hash/tag computation done from Hash Function
-		compute_tag : out std_logic_vector( 128*8 -1 downto 0);
+		compute_tag : out std_logic_vector(MAX_TAG_LEN_BYTE * 8 - 1 downto 0);
 		hash        : out std_logic_vector(1024*8 -1 downto 0);
 		memory	: inout std_logic_vector(128*8-1 downto 0)
 	);
@@ -41,9 +44,9 @@ architecture beh of argon2_operation_2 is
 	);
 
 	signal state, state_next	: type_state;
-	signal tag, C	: std_logic_vector(1023 downto 0); --TODO Fix type
-	signal tag_next, C_next	: std_logic_vector(1023 downto 0); --TODO Fix type
-	signal tag, tag_next std_logic_vector(1024*8 -1 downto 0)
+	signal tag, C	: std_logic_vector(MAX_TAG_LEN_BYTE-1 downto 0); --TODO Fix type
+	signal tag_next, C_next	: std_logic_vector(MAX_TAG_LEN_BYTE-1 downto 0); --TODO Fix type
+	--signal tag, tag_next std_logic_vector(1024*8 -1 downto 0)
 	
 	-- TODO more signals
 
@@ -53,6 +56,7 @@ begin
 
 	-- next state & output logic--
 	state_out : process(tag, C, hash_done)
+	variable FINAL_C : std_logic_vector(MAX_TAG_LEN_BYTE-1 downto 0);
 	begin
 
 		-- prevent latches, set default values
@@ -100,8 +104,14 @@ begin
 --as the XOR of the last column:
 			--C = B[0][q-1] XOR B[1][q-1] XOR ... XOR B[p-1][q-1]
 						--Final block
-						
-				C_next <= 0; --dummy
+				
+				-- Get data of last column
+				FINAL_C := X XOR Y;  -- X call B[0][q-1] and Y = B[1][q-1]
+				for i in 2 to 7 loop
+					C_FINAL := C_FINAL XOR U; -- Where U is B[i][q-1]
+				end loop;
+				
+				C_next <= C_FINAL;
 									
 				state_next <= STATE_COMPUTE_TAG;
 				
@@ -114,6 +124,7 @@ begin
 				
 				if(hash_done = '1') then
 					tag_next <= hash;
+					-- Writeback Tag into memory HERE
 					state_next <= STATE_IDLE;	
 				end if;			
 				

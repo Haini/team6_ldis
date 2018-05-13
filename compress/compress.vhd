@@ -20,7 +20,7 @@ entity compress is
 	port(
 		i_X : in std_logic_vector(1024*8-1 downto 0);
 		i_Y : in std_logic_vector(1024*8-1 downto 0);
-		o_Z : in std_logic_vector(1024*8-1 downto 0)
+		o_Z : out std_logic_vector(1024*8-1 downto 0)
 	);
 
 end compress;
@@ -63,6 +63,7 @@ begin
 		Y := i_Y;
 		-- 1.) Do X XOR Y
 		R := X xor Y;
+		R_START := R;
 
 		-- 2.) Permutate Resulting R0...R7
 		-- 2.1) Permutate Rows
@@ -98,6 +99,9 @@ begin
 							COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)+1); 
 			end loop;
 		end loop;
+		
+		-- Output final Z
+		o_Z <= R_START XOR R;
 
 	end process;
 
