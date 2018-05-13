@@ -1,0 +1,28 @@
+Team 6 was tasked with the following items: 
+
+\begin{enumerate}
+\item Implement steps 5-8 of Section 3.2 in the irtf-draft \autocite{irtf-draft}
+\item Implement compression function G of Section 3.5 in the irtf-draft \autocite{irtf-draft}
+\item Implement permutation P of Section 3.6 in the irtf-draft \autocite{irtf-draft}
+\item Implement the trunc(a) function in the irtf-draft \autocite{irtf-draft}
+\end{enumerate}
+
+As each sub task depends on its mother task it was decided to proceed in a bottom up
+order. 
+\\
+The truncation function trunc(a) truncates a 64 bit vector to a 32 bit vector and 
+is needed to perform multiplications with two 32 bit vectors, which in turn help to
+increase the circuit depth of the implementation. This is important when the target
+hardware are ASICs or FPGAs.
+\\
+Permutation function P takes one 128 byte input and applies a round function GB
+on it.
+\\
+Compression function G takes two 1024 byte inputs and applies an XOR, the
+permutation function P and another XOR on these inputs.
+\\
+Steps 5-8 of the Argon2 Operation are related to computing the actual output tag.
+They operate on a matrix B[i][j] which is, due to its size, placed
+in the DDR2 SDRAM chip. These steps use the compression function G and a variable 
+hash function that is provided by Team 5. It also uses the computed indices i and j,
+provided by Team 6.

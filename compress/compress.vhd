@@ -54,10 +54,7 @@ begin
 		variable R : std_logic_vector(V_SIZE downto 0);
 		variable X : std_logic_vector(V_SIZE downto 0); 
 		variable Y : std_logic_vector(V_SIZE downto 0); 
-		variable s_X : std_logic_vector(VS_SIZE downto 0);
-		variable s_Y : std_logic_vector(VS_SIZE downto 0);
 		variable COL : std_logic_vector(VS_SIZE downto 0);
-		variable j : integer range 0 to 56;
 		variable v_res : blockR(0 to 15); 
 	begin
 		X := i_X;
@@ -67,26 +64,29 @@ begin
 		R := X xor Y;
 		R_START := R;
 
+		report "After XOR: " & to_hstring(R(V_SIZE downto 0));
+
 		-- 2.) Permutate Resulting R0...R7
 		-- 2.1) Permutate Rows
 		for i in 0 to 7 loop
+			report "In Iteration: " & to_hstring(R(V_SIZE - 128*8*i downto V_SIZE - 128*8*(i+1)+1));
 			v_res := f_PERMUTATE(R(V_SIZE - 128*8*i downto V_SIZE - 128*8*(i+1)+1));
 			COL := v_res(0) & v_res(1) & v_res(2) & v_res(3) & v_res(4) &
 					 v_res(5) & v_res(6) & v_res(7) & v_res(8) & v_res(9) &
 					 v_res(10) & v_res(11) & v_res(12) & v_res(13) & v_res(14) &
 					 v_res(15);
+			report "After PERMUTATE: " & to_hstring(COL);
 			R(V_SIZE - 128*8*i downto V_SIZE - 128*8*(i+1)+1) := COL;
 		end loop;
 
 		-- 2.2) Permutate Columns
 		for ii in 0 to 7 loop
 			for i in 0 to 7 loop
-				--report to_string(V_SIZE-1024*ii-i*16*8) & " | " & to_string(V_SIZE-1024*ii-16*8-(i*16*8)+1);
 				COL(VS_SIZE - 16*8*i downto VS_SIZE - 16*8*(i+1)+1) := 
 					R(V_SIZE-1024*ii-i*16*8 downto V_SIZE-1024*ii-16*8-(i*16*8)+1);
 			end loop;
 
-			-- Calculate the Permutation
+			-- Calculate the Permutation of the columns
 			v_res := f_PERMUTATE(COL);
 			COL := v_res(0) & v_res(1) & v_res(2) & v_res(3) & v_res(4) &
 					 v_res(5) & v_res(6) & v_res(7) & v_res(8) & v_res(9) &

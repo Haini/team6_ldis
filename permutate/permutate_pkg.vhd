@@ -6,6 +6,7 @@
 -- Package for the permutate function from
 -- https://tools.ietf.org/pdf/draft-irtf-cfrg-argon2-03.pdf
 -- Section 3.6 
+-- To be more precise, this is the round function, used by the permutation function
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -15,18 +16,26 @@ use ieee.std_logic_1164.all;
 --------------------------------------------------------------------------------
 --
 package permutate_pkg is
+
+	-- Used for the mod 64 Operation
 	constant long_bit : unsigned(63 downto 0)
 	:= "1000000000000000000000000000000000000000000000000000000000000000";	
-
+	
+	-- Custom Data Type that represents an std_logic_array of 64 Bit aka 8 Byte
 	type blockR is array (integer range <>) of std_logic_vector(63 downto 0);	
-	function trunc (constant a : unsigned(63 downto 0)) return unsigned;
 
+
+	-- Function that takes 64 bit and returns 32 bit std_logic_vector 
+	function trunc (constant a : unsigned(63 downto 0)) return unsigned;
+	
+	-- Round Function of Section 3.6 in the irtf draft, used by f_PERMUTATE
 	function f_GB (constant v_in0 : std_logic_vector(63 downto 0);
 		constant v_in1 : std_logic_vector(63 downto 0);
 		constant v_in2 : std_logic_vector(63 downto 0);
 		constant v_in3 : std_logic_vector(63 downto 0))
 	return blockR;
-
+	
+	-- Permutation Function of Section 3.6 in the irtf draft
 	function f_PERMUTATE (constant S : std_logic_vector(128*8-1 downto 0)) 
 	return blockR;
 

@@ -1,0 +1,165 @@
+Some decisions regarding all parts of the implementation were made to provide a
+solution that works in simulation at least. These assumptions do not conform to the specification.
+
+\begin{enumerate}
+\item Grade achieveable of parallelism is 1
+\item Design is not synthesizable and ignores especially the low area criteria
+\item Simulation only possible with VHDL-2008 Standard, --std=08 flag mandatory
+\end{enumerate}
+
+\subsection{Truncation Function trunc(a)}
+The truncation function trunc(a) is implemented as a vhdl function in a package aswell as a
+fully fledged component. Our design uses the function, which is located in the
+permutate_pkg.vhd, due to its easier usage in sequential code (aka in processes).
+\subsection{Permutation Function P}
+The permutation function P was also implemented as a vhdl component at first.
+Due to the heavy usage of sequential code segments a redesign to a vhdl function was 
+done. It resides now in the permutate_pkg.vhd.
+The implementation is as suggested by the \autocite{irtf-draft} - but heavily sequential.
+One could implement a more elegant solution that allows for parallelization of round
+function GB calls that are independet of each other (note that not all calls are
+independet, as they operate on the same matrix). 
+\subsubsection{Round Function GB}
+The round function GB doesn't have its own section but is the foundation of all other
+functionalities. 
+Yet again it was implemented firstly as a component, only to be translated to a function,
+which also resides in the permutate_pkg.vhd. 
+It is implemented straight forward as specified.
+
+\subsubsection{Verification}
+As the round function represents a vital part of the implementation, the generation of
+good test cases was a main goal. To achieve this goal the code of the C reference solution
+\autocite{argon2-github}
+was analyzed and altered.
+The extraction of test vectors at key points of the operation was planned at several parts
+of the argon2 implementation, including the following files from the /src directory:
+
+\begin{itemize}
+\item ref.c
+\item blake2blake2b.c
+\item blake2blamka-round-ref.h
+\item ..Makefile
+\end{itemize}
+
+
+Extraction of the test vectors from the code was done by simple tagged printfs
+of the UINT64 data blocks. The blocks were printed in decimal for simplicity and further
+processing (see \Cref{lst:blake2bc}). Removal of the tags was done by hand, a python script (convert_binary.py) then parses the blocks and converts them into their binary representation.
+
+\begin{lstlisting}[
+	style = customc,
+	caption = {Suboptimal extraction point in blake2b.c},
+	label = lst:blake2bc,
+]
+		...
+		...
+#define ROUND(r)                       	
+    do {                                	
+		printf("INPUTSTART\n");			   	
+		for (i = 0; i < 16; i++) {		   	
+			printf("%" PRIu64 "\n", v[i]); 	
+		}								   	
+		printf("INPUTEND\n");			   	
+		G(v[0], v[4], v[8], v[12]);        
+		G(v[2], v[6], v[10], v[14]);    
+		...
+		...
+		printf("OUTPUTSTART\n");			   	
+		for (i = 0; i < 16; i++) {		   	
+			printf("%" PRIu64 "\n", v[i]); 	
+		}								   	
+		printf("OUTPUTSTART\n");			   	
+
+\end{lstlisting}
+
+First tests proved to be unsuccessful though, as the implementation of the permutation
+function in the C Code differs from the one proposed in the irtf-draft\autocite{irtf-draft}.
+To double check on our proposed solution a python script that also implements the
+permutation P and round GB function was created.
+
+The python and vhdl implementations did deliver the same output. Analyzing the reference
+solution more closely revealed that there are reference, optimized and actually used code
+lines that rely heavily on preprocessor statements. 
+
+Analysis of the Makefile showed, that a check for the platform was done (\Cref{makefile}), and if the
+platform was supported the optimized version of the files was used.
+After modifying the Makefile accordingly (and now actually using the reference solution)
+the generated output \textbf{did} match the output of our vhdl solution, see also table
+\Cref{permresults}.
+
+\begin{lstlisting}[
+	style = customc, 
+	caption = {Parameters for the argon2 execution},
+	label = lst:RunArgon,
+]
+echo -n "password" | ./argon2 somesalt -t 1 -m 16 -p 1 -l 24
+\end{lstlisting}
+
+\begin{lstlisting}[
+	style = customc,
+	caption = {Makefile, deactivate optimizations},
+	label = lst:makefile,
+]
+
+OPTTEST := $(shell $(CC) -Iinclude -Isrc -march=$(OPTTARGET) src/opt.c -c \
+			-o /dev/null 2>/dev/null; echo $$?)
+# Detect compatible platform
+ifneq ($(OPTTEST), 0)
+$(info Building without optimizations)
+	SRC += src/ref.c
+else
+$(info Building with optimizations for $(OPTTARGET))
+	CFLAGS += -march=$(OPTTARGET)
+	SRC += src/opt.c
+endif
+\end{lstlisting}
+
+\begin{table}[ht]
+	\centering
+	\caption{Permutation Function P Outputs}
+	\label{tbl:permresults}
+	\begin{tabular}{c|cccc}
+	\hline
+	Input & Python3.5 & VHDL & C Reference & C Actual \\ 
+	\hline
+	 6A09E667F2BDC948 & 4B86FAA34237F816 & 4B86FAA34237F816 & 4B86FAA34237F816 & 3D9D014CA238A25D \\  
+	 510E527FADE682D1 & 826371B4B7CF06DB & 826371B4B7CF06DB & 826371B4B7CF06DB & D9CE83A69663A233 \\
+	 6A09E667F3BCC908 & 6915F3A835F68E52 & 6915F3A835F68E52 & 6915F3A835F68E52 & B8023558C91686D7 \\  
+	 510E527FADE682E9 & 4A645E346BE317D8 & 4A645E346BE317D8 & 4A645E346BE317D8 &
+	 2E207F7532A740EC \\
+	 \hline
+	\end{tabular}
+\end{table}
+
+For one part the upper half of the 128 Byte Input is initialized in an unexpected way that
+is not mentioned in the \autocite{irtf-draft}. This seems to be part of the regular way of
+implementing blake2b, see the code listing \Cref{blake2bcRound} where v[15] is initialized
+by loading a fixed UINT64 and XORing it with an unknown parameter f[1]. 
+
+\begin{lstlisting}[
+	style = customc,
+	caption = {Suboptimal extraction point in blake2b.c},
+	label = lst:blake2bcRound,
+]
+/*Strange Vector Init*/ v[15] = blake2b_IV[7] ^ S->f[1];
+	...
+	...
+#define G(r, i, a, b, c, d)                                                   
+    do {                                                                       
+        a = a + b + m[blake2b_sigma[r][2 * i + 0]];                            
+        d = rotr64(d ^ a, 32);                                                 
+        c = c + d;                                                             
+        b = rotr64(b ^ c, 24);                                                 
+\end{lstlisting}
+
+
+\subsection{Compression Function G}
+\subsection{Argon2, Steps 5-8}
+
+
+%\begin{lstlisting}[
+%	style = vhdl,
+%	caption = {},
+%	label = lst:,
+%]
+%\end{lstlisting}

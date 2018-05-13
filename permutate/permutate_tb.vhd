@@ -6,6 +6,7 @@
 -- Testbench for the permutate function from
 -- https://tools.ietf.org/pdf/draft-irtf-cfrg-argon2-03.pdf
 -- Section 3.6
+-- To be more precise, this is the round function, used by the permutation function
 --
 --https://github.com/autosub-team/autosub/blob/autosub_devel/tasks/implementation/VHDL/blockcode/templates/testbench_template.vhdl 
 --------------------------------------------------------------------------------
@@ -54,20 +55,13 @@ begin
   
 
 	test: process
-		variable line_v : line;
-		file read_file : text;
-		file read_file2 : text;
-		file write_file : text;
-		variable slv_v : std_logic_vector(128*8-1 downto 0) := (others => '0');	
+		variable line_v 	: line;
+		variable line_read 	: std_logic_vector(63 downto 0);
+		file read_file 		: text;
+		file read_file2		: text;
+
+		variable slv_v 		: std_logic_vector(128*8-1 downto 0) := (others => '0');	
 		variable slv_assert : std_logic_vector(128*8-1 downto 0) := (others => '0');	
-
-		variable line_read : std_logic_vector(63 downto 0);
-		variable readInt : integer := 0;	
-		
-		constant file_name: string :="testvector_bin.txt";
-		file in_file: f_byte open read_mode is file_name;
-
-		variable a: character;
 		
 	begin
 	
@@ -84,10 +78,13 @@ begin
 			
 			slv_v((128*8-1)-(i*64) downto ((128*8-1)-(64*(i+1))+1)) := line_read;
 		end loop;
+
+		-- Skip the output from the C Argon2 Implementation...
 		for ii in 0 to 15 loop
 			readline(read_file, line_v);
 		end loop;
-
+		
+		-- ...and use the output from the python implementation instead
 		for i in 0 to 15 loop
 			readline(read_file2, line_v);
 			read(line_v, line_read);

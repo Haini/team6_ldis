@@ -51,3 +51,26 @@ Input & Python3.5 & VHDL & C Reference & C Actual \\
  510E527FADE682E9 & 4A645E346BE317D8 & 4A645E346BE317D8 & 4A645E346BE317D8 & 2E207F7532A740EC   
 \end{tabular}
 \end{center}
+
+After analysing the Makefile in more detail the culprit for the deviation of 
+the results was found: 
+
+```
+OPTTEST := $(shell $(CC) -Iinclude -Isrc -march=$(OPTTARGET) src/opt.c -c \
+			-o /dev/null 2>/dev/null; echo $$?)
+# Detect compatible platform
+ifneq ($(OPTTEST), 0)
+$(info Building without optimizations)
+	SRC += src/ref.c
+else
+$(info Building with optimizations for $(OPTTARGET))
+	CFLAGS += -march=$(OPTTARGET)
+	SRC += src/opt.c
+endif
+
+```
+
+The Makefile checks if it can build an optimized version for the current architecture and
+if it is able to do so, it will. Somehow this observation slipped the first few times of
+looking at the Makefile, probably due to the fact that the understanding of the code
+structure wasn't very good at that point.

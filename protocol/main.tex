@@ -78,6 +78,16 @@
 %
 % Glossary entries
 %
+\newglossaryentry{hdl}{
+  name={HDL},
+  description={Hardware description language},
+  text={HDL},
+  first={hardware description language (HDL)},
+  plural={HDLs},
+  firstplural={hardware description languages (HDLs)},
+}
+
+
 \newglossaryentry{fpga}{
 	name = {FPGA},
 	description = {Field-programmable gate array},
@@ -183,6 +193,19 @@
 %
 \usepackage{listings}
 
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=single, numbers=left,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
 \lstdefinestyle{vhdl}
 {
 	language=VHDL,
@@ -233,7 +256,7 @@
 %
 % Use \textsubscript
 %
-\usepackage{fixltx2e}
+%\usepackage{fixltx2e}
 %
 %----------------------------------------------------------------------------
 %
@@ -323,30 +346,6 @@
 \input{implementation.tex}
 
 
-\subsection{Top Module State Machine}
-For the main implementation we used a state machine for all the logic. \\\\
-STATE_UART_WELCOME:\\
-The Logic starts in STATE_UART_WELCOME, which sends an welcome message to the user via UART. Afterwards it goes
-into STATE_IDLE and waits for new receiving data. \\\\
-STATE_IDLE:\\
-When it receives new data the state moves forward to STATE_PROD_RN. \\\\
-STATE_TEST_RN:\\
-Dummy State\\\\
-STATE_PROD_RN:\\
-In this state the state machine waits until the TRNG is ready to create next random number and then goes into STATE_PROD_RCV.\\\\
-STATE_PROD_RCV:\\
-In this state it saves the random number and switches into STATE_UART_RN. \\\\
-STATE_UART_RN:\\
-The STATE_UART_RN sends the random number over UART and then switch the state to STATE_SSEG_RN. \\\\
-STATE_SSEG_RN:\\
-The STATE_SSEG_RN state sends the random number data to the seven segment module, which shows the lower 8 nibbles of the random number in hex on the display.\\
-
-\subsection{UART}
-For the UART we used the given UART IP and slightly modified it for our purposes.
-
-\subsection{Seven Segment Display}
-
-%\lipsum[2]
 %
 %----------------------------------------------------------------------------
 %
@@ -369,8 +368,6 @@ For the UART we used the given UART IP and slightly modified it for our purposes
 \section{Conclusions}
 \label{sec:conclusions}
 
-The has a better understanding on how constraints in vhdl and vivado work. 
-Sadly we couldn't provide a working solution.
 %
 %----------------------------------------------------------------------------
 %
