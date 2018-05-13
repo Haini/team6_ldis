@@ -50,6 +50,7 @@ begin
 		); 
 
 	compress : process(i_X, i_Y)
+		variable R_START : std_logic_vector(V_SIZE downto 0);
 		variable R : std_logic_vector(V_SIZE downto 0);
 		variable X : std_logic_vector(V_SIZE downto 0); 
 		variable Y : std_logic_vector(V_SIZE downto 0); 
@@ -61,6 +62,7 @@ begin
 	begin
 		X := i_X;
 		Y := i_Y;
+		
 		-- 1.) Do X XOR Y
 		R := X xor Y;
 		R_START := R;
@@ -103,10 +105,6 @@ begin
 		-- Output final Z
 		o_Z <= R_START XOR R;
 
-	end process;
-
-	get_output : process(o_S)
-	begin
 	end process;
 
 end beh;
